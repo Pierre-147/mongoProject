@@ -16,15 +16,17 @@ def get_lyon():
     return response_json.get("records", [])
 
 def get_paris():
+    #fonction mais changer de set de données
     url="https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json"
     response = requests.request("GET", url)
     response_json = json.loads(response.text.encode('utf8'))
-    return response_json.get("records", [])
+
+    return response_json.get("data", [])
 
 def get_rennes():
     url="https://data.rennesmetropole.fr/explore/dataset/etat-des-stations-le-velo-star-en-temps-reel/download?format=json"
     response = requests.request("GET", url)
     response_json = json.loads(response.text.encode('utf8'))
-    return response_json.get("records", [])
+    return response_json
 
 
