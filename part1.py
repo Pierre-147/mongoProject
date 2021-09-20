@@ -12,24 +12,21 @@ def get_lille():
 
 def get_lyon():
 
-    url="https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json"
+    url="http://api.citybik.es/v2/networks/velov"
     response = requests.request("GET", url)
     response_json = json.loads(response.text.encode('utf8'))
-    return response_json.get("values", [])
+    return response_json.get("network", [])
 
 def get_paris():
     #fonction mais changer de set de données
-    url="https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&q=&facet=stationcode&refine.stationcode=16107"
+    url="http://api.citybik.es/v2/networks/velib"
     response = requests.request("GET", url)
     response_json = json.loads(response.text.encode('utf8'))
-
-    return response_json.get("records", [])
+    return response_json.get("network", [])
 
 def get_rennes():
     #fonctionne et dataset correct
-    url="https://data.rennesmetropole.fr/explore/dataset/etat-des-stations-le-velo-star-en-temps-reel/download?format=json"
+    url="http://api.citybik.es/v2/networks/le-velo-star"
     response = requests.request("GET", url)
     response_json = json.loads(response.text.encode('utf8'))
-    return response_json
-
-print(get_paris())
+    return response_json.get("network", [])
