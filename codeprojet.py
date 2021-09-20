@@ -6,7 +6,7 @@ Created on Tue Sep 14 15:28:24 2021
 """
 
 import time
-from Donnees_station import Donnees_station
+import Donnees_station
 import part1
 
 def get_database():
@@ -33,12 +33,12 @@ if __name__ == "__main__":
     collection_paris = part1.get_paris()
     for station in collection_paris['stations']:
        
-        formated = Donnees_station( station['name'],
+        formated = format( station['name'],
                                     geometry={type: "point", 'coodinates':[station['latitude'],station['longitude']]},
                                     ville="Paris",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
-                                    nb_velo_dispo=station['free_bike'],
+                                    nb_velo_dispo=station['free_bikes'],
                                     date=time.time()
         )
 
@@ -52,12 +52,12 @@ if __name__ == "__main__":
     collection_rennes = part1.get_rennes()
     for station in collection_rennes['stations']:
 
-        formated = Donnees_station( station['name'],
+        formated = format( station['name'],
                                     geometry={type: "point", 'coodinates':[station['latitude'],station['longitude']]},
                                     ville="Rennes",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
-                                    nb_velo_dispo=station['free_bike'],
+                                    nb_velo_dispo=station['free_bikes'],
                                     date=time.time()
         )
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     collection_lille = part1.get_lille()
     for station in collection_lille:
         
-        formated = Donnees_station( station['fields']['nom'],
+        formated = format( station['fields']['nom'],
                                     geometry={type: "point", 'coodinates':station['fields']['geo']},
                                     ville="Lille",
                                     nb_place_total=station['fields']['nbplacesdispo'] + station['fields']['nvelosdispo'],
@@ -92,12 +92,12 @@ if __name__ == "__main__":
     collection_lyon = part1.get_lyon()
     for station in collection_lyon['stations']:
         
-        formated = Donnees_station( station['name'],
+        formated = format( station['name'],
                                     geometry={type: "point", 'coodinates':[station['latitude'],station['longitude']]},
                                     ville="Lyon",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
-                                    nb_velo_dispo=station['free_bike'],
+                                    nb_velo_dispo=station['free_bikes'],
                                     date=time.time()
         )
 
