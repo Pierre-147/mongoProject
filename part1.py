@@ -6,15 +6,25 @@ def get_lille():
     url="https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=vlille-realtime&q=&rows=3000&facet=libelle&facet=nom&facet=commune&facet=etat&facet=type&facet=etatconnexion"
     response = requests.request("GET", url)
     response_json = json.loads(response.text.encode('utf8'))
-    #pour retourner en format objet, enlever le s dans "loads"
     return response_json.get("records", [])
 
 
 def get_lyon():
-    url="https://download.data.grandlyon.com/ws/grandlyon/pvo_patrimoine_voirie.pvostationvelov/all.json?maxfeatures=-1&start=1"
+    url="https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json"
     response = requests.request("GET", url)
     response_json = json.loads(response.text.encode('utf8'))
-    #pour retourner en format objet, enlever le s dans "loads"
     return response_json.get("records", [])
-    
-print (get_lyon())
+
+def get_paris():
+    url="https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json"
+    response = requests.request("GET", url)
+    response_json = json.loads(response.text.encode('utf8'))
+    return response_json.get("records", [])
+
+def get_rennes():
+    url="https://data.rennesmetropole.fr/explore/dataset/etat-des-stations-le-velo-star-en-temps-reel/download?format=json"
+    response = requests.request("GET", url)
+    response_json = json.loads(response.text.encode('utf8'))
+    return response_json.get("records", [])
+
+
