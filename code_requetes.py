@@ -77,8 +77,6 @@ def ratio():
         pprint.pprint(i)
 
 def selection():
-    
-    dbname = get_database()
     fini=False
     query=[]
     while not fini:
@@ -165,6 +163,12 @@ def selection():
             tempo=input()
         if tempo=='O':
             fini=True
+        return query
+    
+
+def recherche():
+    dbname = get_database()
+    query=selection()
     query.append({
             '$unset': ['_id']
         })
@@ -173,11 +177,18 @@ def selection():
     for i in result:
         pprint.pprint(i)
 
+def update():
+    dbname = get_database()
+    query=selection()
+    dbname['historique'].aggregate(query).update()#à faire
 
+def delete():
+    dbname = get_database()
+    query=selection()
+    dbname['historique'].delete_many(query)#à faire
     
-
 if __name__ == "__main__":    
-    selection()
+    delete()
     print('fin')
     prout=input()
     # coordonnees=[48,2]
