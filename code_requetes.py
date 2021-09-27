@@ -11,7 +11,6 @@ import ssl
 
 def get_database():
     client = pymongo.MongoClient("mongodb+srv://python:python@database1.fv5bh.mongodb.net/Database1?retryWrites=true&w=majority", ssl=True,ssl_cert_reqs=ssl.CERT_NONE)
-
     return client['Stations_Velib']
 
 def near():
@@ -43,41 +42,6 @@ def near():
     for i in liste_near:
         pprint.pprint(i)
 
-def ratio():
-    dbname = get_database()
-    query=[
-        {
-            '$match': {
-                'nb_place_total': {
-                    '$gt': 0
-                }
-            }
-        }, {
-            '$addFields': {
-                'ratio': {
-                    '$divide': [
-                        '$nb_velo_dispo', '$nb_place_total'
-                    ]
-                }
-            }
-        }, {
-            '$match': {
-                'ratio': {
-                    '$lte': 0.2
-                }
-            }
-        },{
-            '$unset': [
-                'date', 'geometry', '_id','ratio'
-            ]
-        }
-       ]
-    result = dbname['historique'].aggregate(query)
-    print("Résultats de la recherche :")
-    for i in result:
-        pprint.pprint(i)
-
-
     
 def recherche(name=''):
     if name=='':
@@ -88,7 +52,6 @@ def recherche(name=''):
     print("Résultats de la recherche :")
     for i in result:
         pprint.pprint(i)
-    
 
 
 def update():
@@ -102,6 +65,7 @@ def update():
     print()
     recherche(name)
 
+
 def supprimer():
     recherche()
     name=input("Donner le nom complet de la station : ")
@@ -110,109 +74,30 @@ def supprimer():
     dbname['stations_actuelles'].delete_many(query)
     print("Station supprimée")
 
+
 def supprimer_zone():
-    print("Importer vos coordonnées : ")
-    lat=int(input("lattitude : "))
-    long=int(input("longitude : "))
-    # coordo
-    # find({'geometry': {
-    # $geoWithin: {
-    # "$geometry": {
-    # "type": "Polygon",
-    # "coordinates": [ ….] }
+    coordonnees=[]
+    for _ in range(4):
+        print("Importez vos coordonnées : ")
+        lat=int(input("lattitude : "))
+        long=int(input("longitude : "))
+        coordonnees.append([lat,long])
+    coordonnees.append([coordonnees[0][0],coordonnees[0][1]])
+    query={'geometry': {
+        '$geoWithin': {
+            '$geometry': {
+                'type': 'Polygon', 
+                'coordinates': [coordonnees]
+                }
+            }
+        }
+        }
+    dbname = get_database()
+    dbname['stations_actuelles'].delete_many(query)
+    print("Stations de la zone supprimées")
 
-def selection():
-    fini=False
-    query=[]
-    while not fini:
-        print("Sélection selon quel critère :")
-        print("Ville : 1")
-        print("Nom de station : 2")
-        print("Coordonnées : 3")
-        print("Nombre de places total : 4")
-        print("Nombre de vélos disponible : 5")
-        print("Nombre de places disponibles : 6")
-        select='0'
-        while select>'6' or select<'1':
-            select=input()
-        if select=='1':
-            recherche=input('nom de la ville : ')
-            print(recherche)
-            query.append(
-            {
-                '$match': {
-                    'villle': {
-                        '$eq': recherche
-                    }
-                }
-            })
-        if select=='2':
-            recherche=input('nom de la station : ')
-            print(recherche)
-            query.append(
-            {
-                '$match': {
-                    'nom': {
-                        '$eq': recherche
-                    }
-                }
-            })
-        if select=='3':
-            longitude=input('Longitude : ')
-            lattitude=input('Lattitude : ')
-            print(longitude,lattitude) #############################
-            query.append(
-            {
-                '$match': {
-                    'villle': {
-                        '$eq': recherche
-                    }
-                }
-            })
-        if select=='4':
-            recherche=int(input('Nombre de places total : '))
-            print(recherche)
-            query.append(
-            {
-                '$match': {
-                    'nb_place_total': {
-                        '$eq': recherche
-                    }
-                }
-            })
-        if select=='5':
-            recherche=int(input('Nombre de vélos disponible : '))
-            print(recherche)
-            query.append(
-            {
-                '$match': {
-                    'nb_velo_dispo': {
-                        '$eq': recherche
-                    }
-                }
-            })
-        if select=='6':
-            recherche=int(input('Nombre de places disponible : '))
-            print(recherche)
-            query.append(
-            {
-                '$match': {
-                    'nb_place_dispo': {
-                        '$eq': recherche
-                    }
-                }
-            })
-        
-        tempo=input("Avez-vous fini la sélection des critères ? O/N : ").upper()
-        while tempo!='O' and tempo!='N':
-            tempo=input()
-        if tempo=='O':
-            fini=True
-        return query
-
-
-    def find_overused_station():
-        [
+def find_overused_station():
+    query=[
             {
                 '$project': {
                     '_id': {
@@ -254,3 +139,8 @@ def selection():
                 }
             }
         ]
+    dbname = get_database()
+    result=dbname['stations_actuelles'].aggregate(query)
+    print("Résultats de la recherche :")
+    for i in result:
+        pprint.pprint(i)
