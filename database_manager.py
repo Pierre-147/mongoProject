@@ -41,7 +41,7 @@ def maj_collection(dbname):
     collection_paris = data_finder.get_paris()
     for station in collection_paris['stations']:
         formated = formater_donnees( station['name'],
-                                    geometry={'type': "Point", 'coordinates':[station['longitude'],station['latitude']]},
+                                    geometry={'type': "Point", 'coordinates':[station['latitude'],station['longitude']]},
                                     ville="Paris",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
@@ -56,7 +56,7 @@ def maj_collection(dbname):
     collection_rennes = data_finder.get_rennes()
     for station in collection_rennes['stations']:
         formated = formater_donnees( station['name'],
-                                    geometry={'type': "Point", 'coordinates':[station['longitude'],station['latitude']]},
+                                    geometry={'type': "Point", 'coordinates':[station['latitude'],station['longitude']]},
                                     ville="Rennes",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
@@ -87,7 +87,7 @@ def maj_collection(dbname):
     collection_lyon = data_finder.get_lyon()
     for station in collection_lyon['stations']:
         formated = formater_donnees( station['name'],
-                                    geometry={'type': "Point", 'coordinates':[station['longitude'],station['latitude']]},
+                                    geometry={'type': "Point", 'coordinates':[station['latitude'],station['longitude']]},
                                     ville="Lyon",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
@@ -166,4 +166,3 @@ def historisation():
     thread2.start()
     event_stop_thread.wait()
     print("Fin de programme d'automatisation")
-    
