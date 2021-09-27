@@ -1,0 +1,9 @@
+requests
+json
+pymongo
+pymongo[srv]
+ssl
+time
+datetime
+threading
+pprint
