@@ -1,6 +1,7 @@
 import pymongo # module pour utiliser MongoDB
 import ssl # module pour se connecter au serveur MongoDB
-import time # module pour obtenir la date
+import time # allows to sleep
+import datetime # module pour obtenir la date
 import threading as th # module pour lancer des programmes en parallèle
 import data_finder # code python pour obtenir les données issu des APIs
 
@@ -45,7 +46,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.localtime()
+                                    date=datetime.datetime.now().isoformat()
         )
 
         collection_name.insert_one(formated)
@@ -60,7 +61,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.localtime()
+                                    date=datetime.datetime.now().isoformat()
         )
 
         collection_name.insert_one(formated)
@@ -75,7 +76,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['fields']['nbplacesdispo'] + station['fields']['nbvelosdispo'],
                                     nb_place_dispo=station['fields']['nbplacesdispo'],
                                     nb_velo_dispo=station['fields']['nbvelosdispo'],
-                                    date=time.localtime()
+                                    date=datetime.datetime.now().isoformat()
         )
 
         collection_name.insert_one(formated)
@@ -91,7 +92,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.localtime()
+                                    date=datetime.datetime.now().isoformat()
         )
 
         collection_name.insert_one(formated)
