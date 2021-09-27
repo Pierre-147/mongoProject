@@ -45,7 +45,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.asctime(time.time.localtime())
+                                    date=time.localtime()
         )
 
         collection_name.insert_one(formated)
@@ -60,7 +60,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.asctime(time.time.localtime())
+                                    date=time.localtime()
         )
 
         collection_name.insert_one(formated)
@@ -75,7 +75,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['fields']['nbplacesdispo'] + station['fields']['nbvelosdispo'],
                                     nb_place_dispo=station['fields']['nbplacesdispo'],
                                     nb_velo_dispo=station['fields']['nbvelosdispo'],
-                                    date=time.asctime(time.time.localtime())
+                                    date=time.localtime()
         )
 
         collection_name.insert_one(formated)
@@ -91,7 +91,7 @@ def maj_collection(dbname):
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.asctime(time.time.localtime())
+                                    date=time.localtime()
         )
 
         collection_name.insert_one(formated)
