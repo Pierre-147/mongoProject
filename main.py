@@ -5,8 +5,9 @@ import code_requetes # code pour faire les requêtes à MongoDB
 # main permet à l'utilisateur de sélectionner les différentes fonctions
 # renvoie void
 def main():
-    choix='0'
+    choix=''
     while choix !='9':
+        choix=''
         print("Que voulez-vous faire?")
         print("Initialiser la base de données : 1")
         print("Lancer un programme automatique d'actualisation et d'historisation des données : 2")
@@ -24,6 +25,7 @@ def main():
             database_manager.initialisation()
         if choix=="2":
             database_manager.historisation()
+            print("test main")
         if choix=='3':
             code_requetes.near()
         if choix=='4':
