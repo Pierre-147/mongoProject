@@ -211,7 +211,7 @@ def selection():
         return query
 
 
-    def find_overused_station(hour):
+    def find_overused_station():
         [
             {
                 '$project': {
@@ -236,7 +236,7 @@ def selection():
                             2, 3, 4, 5, 6
                         ]
                     }, 
-                    '_id.hourOfDay': hour
+                    '_id.hourOfDay': 18
                 }
             }, {
                 '$addFields': {
