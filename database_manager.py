@@ -71,7 +71,7 @@ def maj_collection(dbname):
     collection_lille = data_finder.get_lille()
     for station in collection_lille:
         formated = formater_donnees( station['fields']['nom'],
-                                    geometry={'type': "Point", 'coordinates':station['fields']['geo']},
+                                    geometry={'type': "Point", 'coordinates':station['fields']['geo'][::-1]},
                                     ville="Lille",
                                     nb_place_total=station['fields']['nbplacesdispo'] + station['fields']['nbvelosdispo'],
                                     nb_place_dispo=station['fields']['nbplacesdispo'],
