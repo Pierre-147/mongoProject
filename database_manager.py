@@ -118,9 +118,9 @@ def initialisation():
 def historisation():
 
     # fonction en thread pour actualiser les données
-    def thread_principal(event):
+    def thread_principal(event_stop_thread):
         loop=True
-        while loop :
+        while loop==True :
             dbname = get_database()
             # Met les données de 'stations_actuelles' dans la collection 'historique'
             dbname['stations_actuelles'].aggregate([
@@ -130,7 +130,7 @@ def historisation():
                     '$out': 'historique'
                 }
                 ])
-            print('Les données ont été historisées')
+            print("Les données ont mis dans 'historique'")
             # Supprime les données de 'stations_actuelles'
             dbname['stations_actuelles'].delete_many({})
             # Importe des nouvelles données dans 'stations_actuelles'
@@ -138,25 +138,24 @@ def historisation():
             print("Actualisation et historisation des données effectuées")
 
             # 2 min de repos
-            #check toutes les 30 secondes, si l'event est set, pour stopper la boucle
+            #check toutes les 5 secondes, si event_stop_thread est set, pour stopper la boucle
             tempo=0
-            if event.is_set():
+            if event_stop_thread.is_set():
                 loop=False
-            while loop and tempo<24+1:
+            while (loop==True and tempo<24+1):
                 time.sleep(5)
                 tempo+=1
-                print('#',end='')
-                if event.is_set():
+                if event_stop_thread.is_set():
                     loop=False
-            print('')
+                    print(loop)
 
     # fonction en thread pour stopper l'actualisation
     def run(event):
-        stop_thread=input("Pour stopper l' actualisation et l' historisation des données, taper 1 : ")
-        while stop_thread!='1':
+        stop_thread=input("Pour stopper l' actualisation et l' historisation des données, taper 0 : ")
+        while stop_thread!='0':
             stop_thread=input()
-        event.set()
-        print("!! Arrêt de l'automatisation !!")
+        event_stop_thread.set()
+        print("Arrêt en cours de l'automatisation")
 
     #programme pour lancer les threads
     event_stop_thread=th.Event()
@@ -164,5 +163,6 @@ def historisation():
     thread2=th.Thread(target=run,args=(event_stop_thread,))
     thread1.start()
     thread2.start()
-    event_stop_thread.wait()
+    thread1.join()
+    thread2.join()
     print("Fin de programme d'automatisation")
