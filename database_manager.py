@@ -100,7 +100,7 @@ def maj_collection(dbname):
 
 
 # =============================================================================
-# initialisation permet d'initialiser la base de données
+# initialisation permet d'initialiser la base de données ainsi que les index
 # renvoie void
 def initialisation():
     dbname = get_database()
