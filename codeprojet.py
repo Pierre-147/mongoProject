@@ -1,60 +1,81 @@
-import pymongo
-import ssl
-import time
-import threading as th
-import Donnees_station
-import part1
+import pymongo # module pour utiliser MongoDB
+import ssl # module pour se connecter au serveur MongoDB
+import time # module pour obtenir la date
+import threading as th # module pour lancer des programmes en parallèle
+import data_finder # code python pour obtenir les données issu des APIs
 
+
+# =============================================================================
+# get_database permet de se connecter au serveur MongoDB et à la base de données
+# renvoie l'objet base de données 'Stations_Velib'
 def get_database():
-        
     client = pymongo.MongoClient("mongodb+srv://python:python@database1.fv5bh.mongodb.net/Database1?retryWrites=true&w=majority",
                                  ssl=True,ssl_cert_reqs=ssl.CERT_NONE)
 
     return client['Stations_Velib']
 
 
+# =============================================================================
+# formater_donnees permet de mettre en forme les données
+# renvoie la donnée sous forme d'objet formaté
+def formater_donnees(nom="",geometry={"type": "point",'coordinates':[0,0]},
+            ville="",nb_place_total=0,nb_place_dispo=0,nb_velo_dispo=0,date=""):
+    result = {  'nom':nom,
+                'geometry':geometry,
+                'ville':ville,
+                'nb_place_total':nb_place_total,
+                'nb_place_dispo':nb_place_dispo,
+                'nb_velo_dispo':nb_velo_dispo,
+                'date':date}
+    return result
+
+
+# =============================================================================
+# maj_collection permet se connecter aux APIs des stations Vélib de Paris,
+# Rennes, Lille et Lyon et de mettres leurs données dans la collection "stations_actuelles"
+# renvoie void
 def maj_collection(dbname):
     collection_name = dbname["stations_actuelles"]
     #Import data from Paris
-    collection_paris = part1.get_paris()
+    collection_paris = data_finder.get_paris()
     for station in collection_paris['stations']:
-        formated = Donnees_station.formatt( station['name'],
+        formated = formater_donnees( station['name'],
                                     geometry={'type': "Point", 'coordinates':[station['longitude'],station['latitude']]},
                                     ville="Paris",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.asctime(time.localtime())
+                                    date=time.asctime(time.time.localtime())
         )
 
         collection_name.insert_one(formated)
     print("données Paris importées",end=', ')
 
     #Import data from Rennes
-    collection_rennes = part1.get_rennes()
+    collection_rennes = data_finder.get_rennes()
     for station in collection_rennes['stations']:
-        formated = Donnees_station.formatt( station['name'],
+        formated = formater_donnees( station['name'],
                                     geometry={'type': "Point", 'coordinates':[station['longitude'],station['latitude']]},
                                     ville="Rennes",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.asctime(time.localtime())
+                                    date=time.asctime(time.time.localtime())
         )
 
         collection_name.insert_one(formated)
     print("données Rennes importées",end=', ')
 
     #Import data From Lille
-    collection_lille = part1.get_lille()
+    collection_lille = data_finder.get_lille()
     for station in collection_lille:
-        formated = Donnees_station.formatt( station['fields']['nom'],
+        formated = formater_donnees( station['fields']['nom'],
                                     geometry={'type': "Point", 'coordinates':station['fields']['geo']},
                                     ville="Lille",
                                     nb_place_total=station['fields']['nbplacesdispo'] + station['fields']['nbvelosdispo'],
                                     nb_place_dispo=station['fields']['nbplacesdispo'],
                                     nb_velo_dispo=station['fields']['nbvelosdispo'],
-                                    date=time.asctime(time.localtime())
+                                    date=time.asctime(time.time.localtime())
         )
 
         collection_name.insert_one(formated)
@@ -62,15 +83,15 @@ def maj_collection(dbname):
 
     #Import data From Lyon
     collection_name = dbname["stations_actuelles"]
-    collection_lyon = part1.get_lyon()
+    collection_lyon = data_finder.get_lyon()
     for station in collection_lyon['stations']:
-        formated = Donnees_station.formatt( station['name'],
+        formated = formater_donnees( station['name'],
                                     geometry={'type': "Point", 'coordinates':[station['longitude'],station['latitude']]},
                                     ville="Lyon",
                                     nb_place_total=station['extra']['slots'],
                                     nb_place_dispo=station['empty_slots'],
                                     nb_velo_dispo=station['free_bikes'],
-                                    date=time.asctime(time.localtime())
+                                    date=time.asctime(time.time.localtime())
         )
 
         collection_name.insert_one(formated)
@@ -78,14 +99,19 @@ def maj_collection(dbname):
     print("Les données des stations Vélib ont été importées avec succès")
 
 
+# =============================================================================
+# historisation permet de copier les données de "stations_actuelles" dans "historique",
+# de supprimer les données de "stations_actuelles" puis d'importer des nouvelles données,
+# de façon automatique, avec 2 minutes de repos
+# renvoie void
 def historisation():
+
+    # fonction en thread pour actualiser les données
     def thread_principal(event):
         loop=True
         while loop :
-            # Get the database
             dbname = get_database()
-            
-            # Move the data to collection 'historique'
+            # Met les données de 'stations_actuelles' dans la collection 'historique'
             dbname['stations_actuelles'].aggregate([
                 {
                     '$match': {}
@@ -93,14 +119,15 @@ def historisation():
                     '$out': 'historique'
                 }
                 ])
-            # Delete data  in 'station'
             print('Les données ont été historisées')
+            # Supprime les données de 'stations_actuelles'
             dbname['stations_actuelles'].delete_many({})
-            # Put new data
+            # Importe des nouvelles données dans 'stations_actuelles'
             maj_collection(dbname)
             print("Actualisation et historisation des données effectuées")
-            
-            #check toutes les 30 secondes, si l'event est set
+
+            # 2 min de repos
+            #check toutes les 30 secondes, si l'event est set, pour stopper la boucle
             tempo=0
             if event.is_set():
                 loop=False
@@ -111,15 +138,16 @@ def historisation():
                 if event.is_set():
                     loop=False
             print('')
-            
-    
+
+    # fonction en thread pour stopper l'actualisation
     def run(event):
         stop_thread=input("Pour stopper l' actualisation et l' historisation des données, taper 1 : ")
         while stop_thread!='1':
             stop_thread=input()
         event.set()
         print("!! Arrêt de l'automatisation !!")
-    
+
+    #programme pour lancer les threads
     event_stop_thread=th.Event()
     thread1=th.Thread(target=thread_principal,args=(event_stop_thread,))
     thread2=th.Thread(target=run,args=(event_stop_thread,))
@@ -127,12 +155,4 @@ def historisation():
     thread2.start()
     event_stop_thread.wait()
     print("Fin de programme d'automatisation")
-    
-
-if __name__ == "__main__":    
-    
-    # Get the database
-    dbname = get_database()
-    maj_collection(dbname)
-
     
