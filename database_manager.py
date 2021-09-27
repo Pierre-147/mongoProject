@@ -97,7 +97,17 @@ def maj_collection(dbname):
 
         collection_name.insert_one(formated)
     print("données Lyon importées.")
-    print("Les données des stations Vélib ont été importées avec succès")
+    print("Les données des stations Vélib ont été importées avec succès.")
+
+
+# =============================================================================
+# initialisation permet d'initialiser la base de données ainsi que les index
+# renvoie void
+def initialisation():
+    dbname = get_database()
+    maj_collection(dbname)
+    dbname["stations_actuelles"].create_index([ ( "geometry" , pymongo.GEOSPHERE ) ])
+    dbname["historique"].create_index( [( "geometry" ,pymongo.GEOSPHERE )] )
 
 
 # =============================================================================
