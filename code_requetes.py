@@ -5,25 +5,25 @@ Created on Mon Sep 20 14:48:28 2021
 @author: blond
 """
 
-import part1
-import codeprojet
 import pprint
 import pymongo
 import ssl
-import time
-def get_database():
 
+def get_database():
     client = pymongo.MongoClient("mongodb+srv://python:python@database1.fv5bh.mongodb.net/Database1?retryWrites=true&w=majority", ssl=True,ssl_cert_reqs=ssl.CERT_NONE)
 
     return client['Stations_Velib']
 
-def near(coordonnees):
+def near():
+    print("Importer vos coordonnées : ")
+    lat=int(input("lattitude : "))
+    long=int(input("longitude : "))
     # Get the database
     dbname = get_database()
     query=[{
         '$geoNear': {
             'near': {
-                'type': 'Point', 'coordinates': coordonnees}, 
+                'type': 'Point', 'coordinates': [lat,long]}, 
             'distanceField': 'distance', 
             'query': {}
             }
@@ -35,10 +35,11 @@ def near(coordonnees):
         '$limit': 3
     },{
             '$unset': [
-                'date', 'geometry', '_id'
+                'date', 'distance', '_id'
             ]
         }]
     liste_near=dbname['stations_actuelles'].aggregate(query)
+    print("Résultats de la recherche :")
     for i in liste_near:
         pprint.pprint(i)
 
@@ -75,6 +76,50 @@ def ratio():
     print("Résultats de la recherche :")
     for i in result:
         pprint.pprint(i)
+
+
+    
+def recherche(name=''):
+    if name=='':
+        name=input("Donner le nom de la station (quelques lettres) : ")
+    dbname = get_database()
+    query = { "nom": { "$regex": name,"$options":"i" } }
+    result = dbname['stations_actuelles'].find(query,{"_id":0,"date":0})
+    print("Résultats de la recherche :")
+    for i in result:
+        pprint.pprint(i)
+    
+
+
+def update():
+    recherche()
+    name=input("Donner le nom complet de la station : ")
+    item=input("Donner le champ à modifier : ")
+    newvalue=input("Donner la nouvelle valeur du champs :")
+    dbname = get_database()
+    print(name,item,newvalue)
+    dbname['stations_actuelles'].update_one({"nom": name}, {"$set": { item: newvalue}})
+    print()
+    recherche(name)
+
+def supprimer():
+    recherche()
+    name=input("Donner le nom complet de la station : ")
+    query = { "nom": { "$regex": name } }
+    dbname = get_database()
+    dbname['stations_actuelles'].delete_many(query)
+    print("Station supprimée")
+
+def supprimer_zone():
+    print("Importer vos coordonnées : ")
+    lat=int(input("lattitude : "))
+    long=int(input("longitude : "))
+    # coordo
+    # find({'geometry': {
+    # $geoWithin: {
+    # "$geometry": {
+    # "type": "Polygon",
+    # "coordinates": [ ….] }
 
 def selection():
     fini=False
@@ -164,36 +209,4 @@ def selection():
         if tempo=='O':
             fini=True
         return query
-    
-
-def recherche():
-    dbname = get_database()
-    query=selection()
-    query.append({
-            '$unset': ['_id']
-        })
-    result = dbname['historique'].aggregate(query)
-    print("Résultats de la recherche :")
-    for i in result:
-        pprint.pprint(i)
-
-def update():
-    dbname = get_database()
-    query=selection()
-    dbname['historique'].aggregate(query).update()#à faire
-
-def delete():
-    dbname = get_database()
-    query=selection()
-    dbname['historique'].delete_many(query)#à faire
-    
-if __name__ == "__main__":    
-    delete()
-    print('fin')
-    prout=input()
-    # coordonnees=[48,2]
-    # near(coordonnees)
-    #ratio()
-    
-
 
