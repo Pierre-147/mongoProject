@@ -210,3 +210,47 @@ def selection():
             fini=True
         return query
 
+
+    def find_overused_station(hour):
+        [
+            {
+                '$project': {
+                    '_id': {
+                        'station_id': '$station_id', 
+                        'dayOfWeek': {
+                            '$dayOfWeek': '$date'
+                        }, 
+                        'hourOfDay': {
+                            '$hour': '$date'
+                        }, 
+                        'averageBike': {
+                            '$avg': '$nb_velo_dispo'
+                        }, 
+                        'totPlace': '$nb_place_total'
+                    }
+                }
+            }, {
+                '$match': {
+                    '_id.dayOfWeek': {
+                        '$in': [
+                            2, 3, 4, 5, 6
+                        ]
+                    }, 
+                    '_id.hourOfDay': hour
+                }
+            }, {
+                '$addFields': {
+                    'ratio': {
+                        '$divide': [
+                            '$_id.averageBike', '$_id.totPlace'
+                        ]
+                    }
+                }
+            }, {
+                '$match': {
+                    'ratio': {
+                        '$lte': .2
+                    }
+                }
+            }
+        ]
