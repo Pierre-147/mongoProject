@@ -1,7 +1,7 @@
 mongoProject par Pierre Niclas et Corentin Blondeau
 
 Programme en python pour manipuler une base de donnée sur MongoDB.
-Les données concernent les stations Vélib de Lille, Rennes, Lyon et Paris.
+Les données concernent les stations Vélib de Lille, Rennes, Lyon et Paris, le liens des APIs contenant ces informations est disponible dans .
 
 Pour lancer le programme, exécuter le code de main.py .
 
